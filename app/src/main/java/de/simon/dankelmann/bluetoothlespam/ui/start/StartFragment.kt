@@ -4,10 +4,12 @@ import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -30,12 +32,10 @@ import de.simon.dankelmann.bluetoothlespam.Models.AdvertisementSetCollection
 import de.simon.dankelmann.bluetoothlespam.Models.AdvertisementSetList
 import de.simon.dankelmann.bluetoothlespam.PermissionCheck.PermissionCheck
 import de.simon.dankelmann.bluetoothlespam.R
-import de.simon.dankelmann.bluetoothlespam.Services.BluetoothLeScanForegroundService
 import de.simon.dankelmann.bluetoothlespam.databinding.FragmentStartBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -65,6 +65,14 @@ class StartFragment : Fragment() {
         _viewModel = viewModel
         _binding = FragmentStartBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            root.setOnApplyWindowInsetsListener { view, insets ->
+                val statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars())
+                view.setPadding(0, statusBarInsets.top, 0, 0)
+                insets
+            }
+        }
 
         _viewModel!!.appVersion.postValue(getAppVersion())
         _viewModel!!.androidVersion.postValue(android.os.Build.VERSION.RELEASE)
@@ -225,6 +233,15 @@ class StartFragment : Fragment() {
 
         // Loading Animation
         val loadingSpinnerLayout: View = binding.startFragmentLoadingSpinnerLayout
+
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            loadingSpinnerLayout.setOnApplyWindowInsetsListener { view, insets ->
+                val statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars())
+                view.setPadding(0, statusBarInsets.top, 0, 0)
+                insets
+            }
+        }
+
         _viewModel!!.isLoading.observe(viewLifecycleOwner) {
             loadingSpinnerLayout.visibility = when(it){
                 true -> View.VISIBLE

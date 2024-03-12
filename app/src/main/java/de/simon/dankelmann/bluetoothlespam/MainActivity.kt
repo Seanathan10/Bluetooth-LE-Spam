@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.Window
+import android.view.WindowInsets
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
@@ -64,6 +65,15 @@ class MainActivity : AppCompatActivity() {
 
         // Custom toolbar
         val toolbar = findViewById<Toolbar>(R.id.customToolbar)
+
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ) {
+            toolbar.setOnApplyWindowInsetsListener { view, insets ->
+                val statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars())
+                view.setPadding(0, statusBarInsets.top, 0, statusBarInsets.bottom)
+                insets
+            }
+        }
+
         setSupportActionBar(toolbar)
 
         // Listen to Preference changes
